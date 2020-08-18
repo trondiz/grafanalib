@@ -14,6 +14,7 @@ Changes
 * Add derivative metric aggregation for Elasticsearch
 * Add ``Stat`` class (and ``StatMapping``, ``StatValueMapping``, ``StatRangeMapping``) to support the Stat panel
 * Add ``Svg`` class to support the SVG panel
+* Add ``Flowcharting`` class to support the flowcharting panel
 * ...
 
 

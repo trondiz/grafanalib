@@ -81,6 +81,7 @@ GAUGE_TYPE = "gauge"
 HEATMAP_TYPE = "heatmap"
 STATUSMAP_TYPE = "flant-statusmap-panel"
 SVG_TYPE = 'marcuscalidus-svg-panel'
+FLOWCHARTING_TYPE = 'agenty-flowcharting-panel'
 
 DEFAULT_FILL = 1
 DEFAULT_REFRESH = '10s'
@@ -2470,4 +2471,187 @@ class Svg(object):
             'title': self.title,
             'type': SVG_TYPE,
             'useSVGBuilder': False
+        }
+
+
+@attr.s
+class Flowcharting(object):
+    """Generates Flowcharting panel json structure
+    Grafana doc on flowcharting: https://grafana.com/grafana/plugins/agenty-flowcharting-panel
+    """
+
+    dataSource = attr.ib()
+    targets = attr.ib()
+    title = attr.ib()
+    rulesdata = attr.ib()
+    description = attr.ib(default=None)
+    editable = attr.ib(default=True, validator=instance_of(bool))
+    format = attr.ib(default='none')
+    height = attr.ib(default=None)
+    id = attr.ib(default=None)
+    links = attr.ib(default=attr.Factory(list))
+    span = attr.ib(default=6)
+    timeFrom = attr.ib(default=None)
+    xml = attr.ib(default='none')
+    csv = attr.ib(default='none')
+    flowcharttype = attr.ib(default='csv')
+    download = attr.ib(default=False, validator=instance_of(bool))
+    url = attr.ib(default=None)
+
+
+
+
+    def to_json_data(self):
+        return {
+            'datasource': self.dataSource,
+            'description': self.description,
+            'editable': self.editable,
+            'id': self.id,
+            'links': self.links,
+            'height': self.height,
+            "valueName": "current",
+            "pluginVersion": "6.7.4",
+            "newFlag": "false",
+            "format": "short",
+            'flowchartsData': {
+                "flowcharts": [
+                    {
+                        "name": "Main",
+                        "xml": self.xml,
+                        "csv": self.csv,
+                        "download": self.download,
+                        "type": self.flowcharttype,
+                        "url": self.url,
+                        "zoom": "100%",
+                        "center": "true",
+                        "scale": "true",
+                        "lock": "true",
+                        "allowDrawio": "false",
+                        "enableAnim": "true",
+                        "tooltip": "true",
+                        "grid": "false",
+                        "bgColor": "null",
+                        "editorUrl": "https://www.draw.io",
+                        "editorTheme": "dark"
+                    }
+                ]
+            },
+            "rulesData": {
+                "rulesData": self.rulesdata
+            },
+            'span': self.span,
+            'targets': self.targets,
+            'title': self.title,
+            'type': FLOWCHARTING_TYPE,
+            'timeFrom': self.timeFrom,
+        }
+
+@attr.s
+class FlowchartingRule(object):
+    """Generates Flowcharting panel rule json structure
+    Grafana doc on flowcharting: https://grafana.com/grafana/plugins/agenty-flowcharting-panel
+    """
+
+    pattern = attr.ib(default=".*")
+    unit = attr.ib(default="short")
+    type = attr.ib(default="number")
+    metricType = attr.ib(default="serie")
+    alias = attr.ib(default="myRule")
+    refId = attr.ib(default="A")
+    column = attr.ib(default="Time")
+    hidden = attr.ib(default=False)
+    aggregation = attr.ib(default="current")
+    decimals = attr.ib(default="2")
+    colors = attr.ib(default=[
+    "rgba(245, 54, 54, 0.9)",
+    "rgba(237, 129, 40, 0.89)",
+    "rgba(50, 172, 45, 0.97)"
+    ])
+    reduce = attr.ib(default=True)
+    dateFormat = attr.ib(default="YYYY-MM-DD HH:mm:ss")
+    thresholds = attr.ib(default=[
+    50,
+    80
+    ])
+    stringThresholds = attr.ib(default=[
+    "/.*/",
+    "/.*/"
+    ])
+    invert = attr.ib(default=False)
+    gradient  = attr.ib(default=False)
+    overlayIcon  = attr.ib(default=False)
+    tooltip = attr.ib(default=False)
+    tooltipLabel = attr.ib(default="")
+    tooltipColors = attr.ib(default=False)
+    tooltipOn = attr.ib(default="a")
+    tpDirection = attr.ib(default="v")
+    tpGraph = attr.ib(default=False)
+    tpGraphSize = attr.ib(default="100%")
+    tpGraphType = attr.ib(default="line")
+    tpGraphLow = attr.ib(default="null")
+    tpGraphHigh = attr.ib(default="null")
+    tpGraphScale = attr.ib(default="linear")
+    shapeProp = attr.ib(default="id")
+    shapeRegEx = attr.ib(default=True)
+    shapeData = attr.ib(default=[])
+    textProp = attr.ib(default="id")
+    textRegEx = attr.ib(default=True)
+    textData = attr.ib(default=[])
+    linkProp = attr.ib(default="id")
+    linkRegEx = attr.ib(default=True)
+    linkData = attr.ib(default=[])
+    eventProp = attr.ib(default="id")
+    eventRegEx = attr.ib(default=False)
+    eventData = attr.ib(default=[])
+    mappingType = attr.ib(default=1)
+    valueData = attr.ib(default=[])
+    rangeData = attr.ib(default=[])
+    sanitize = attr.ib(default=False)
+
+    def to_json_data(self):
+        return       {
+            "pattern": self.pattern,
+            "unit": self.unit,
+            "type": self.type,
+            "metricType": self.metricType,
+            "alias": self.alias,
+            "column": self.column,
+            "hidden": self.hidden,
+            "aggregation": self.aggregation,
+            "decimals": self.decimals,
+            "colors": self.colors,
+            "reduce": self.reduce,
+            "dateFormat": self.dateFormat,
+            "thresholds": self.thresholds,
+            "stringThresholds": self.stringThresholds,
+            "invert": self.invert,
+            "gradient": self.gradient,
+            "overlayIcon": self.overlayIcon,
+            "tooltip": self.tooltip,
+            "tooltipLabel": self.tooltipLabel,
+            "tooltipColors": self.tooltipColors,
+            "tooltipOn": self.tooltipOn,
+            "tpDirection": self.tpDirection,
+            "tpGraph": self.tpGraph,
+            "tpGraphSize": self.tpGraphSize,
+            "tpGraphType": self.tpGraphType,
+            "tpGraphLow": self.tpGraphLow,
+            "tpGraphHigh": self.tpGraphHigh,
+            "tpGraphScale": self.tpGraphScale,
+            "shapeProp": self.shapeProp,
+            "shapeRegEx": self.shapeRegEx,
+            "shapeData": self.shapeData,
+            "textProp": self.textProp,
+            "textRegEx": self.textRegEx,
+            "textData": self.textData,
+            "linkProp": self.linkProp,
+            "linkRegEx": self.linkRegEx,
+            "linkData": self.linkData,
+            "eventProp": self.eventProp,
+            "eventRegEx": self.eventRegEx,
+            "eventData": self.eventData,
+            "mappingType": self.mappingType,
+            "valueData": self.valueData,
+            "rangeData": self.rangeData,
+            "sanitize": self.sanitize
         }
